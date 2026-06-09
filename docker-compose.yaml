@@ -1,0 +1,17 @@
+networks:
+  idms:
+    external: true
+
+services:
+  baoqi-c:  #曝气
+    image: swr.cn-south-1.myhuaweicloud.com/xintong/ai-baoqi-hg:1.0.0
+    container_name: baoqi-c
+    environment:
+      - TZ=Asia/Shanghai
+    restart: unless-stopped
+    networks:
+      - idms
+    volumes:
+      - "./hg_baoqi.json:/app/divers/HG/baoqi/hg_baoqi.json"
+      - "./log:/app/divers/HG/baoqi/log"
+      - "./AI_control.onnx:/app/divers/HG/baoqi/AI_control.onnx"
