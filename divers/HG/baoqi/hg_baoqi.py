@@ -66,7 +66,9 @@ class HGBaoqiModel(WaterControlModel):
         self.fan_runtime_thread.daemon = True
         self.fan_runtime_thread.start()
         self.fan_runtime_initialized = False
-        self.switch_run_seconds = 7 * 24 * 60 * 60
+        self.switch_run_seconds = self.m_cfng['switch_time']
+        for fan_id in self.fan_ids:
+            self.m_cfng[f'fj{fan_id}_continuous_runtime_seconds'] = 0.0
 
     def _fan_runtime_loop(self):
         while True:
@@ -123,6 +125,84 @@ class HGBaoqiModel(WaterControlModel):
                 if is_running and start_time is not None:
                     current_runtime += now - start_time
                 self.m_cfng[f'fj{fan_id}_runtime_seconds'] = round(current_runtime, 1)
+                # 计算本次连续运行时间
+                continuous_runtime = 0.0
+
+                if is_running and start_time is not None:
+                    continuous_runtime = now - start_time
+
+                self.m_cfng[f'fj{fan_id}_continuous_runtime_seconds'] = round(continuous_runtime, 1)
+                
+    def get_longest_continuous_running_fan(self, fan_ids):
+        self._update_fan_runtime()
+
+        with self.fan_runtime_lock:
+            running_fans = {
+                fan_id: self.m_cfng.get(
+                    f'fj{fan_id}_continuous_runtime_seconds',
+                    0
+                )
+                for fan_id in fan_ids
+                if self.fan_runtime_state.get(fan_id)
+            }
+
+            if not running_fans:
+                return None, 0
+
+            fan_id = max(running_fans, key=running_fans.get)
+
+            return fan_id, running_fans[fan_id]
+        
+    def check_fan_switch(self, fan_ids):
+        stop_fan_id, run_seconds = (
+            self.get_longest_continuous_running_fan(fan_ids)
+        )
+
+        # 没有正在运行的风机
+        if stop_fan_id is None:
+            return
+        
+        if run_seconds < self.switch_run_seconds:
+            return
+
+        # 选择停止时间最久的风机
+        start_fan_id = self.get_earliest_stopped_fan_id(fan_ids)
+
+        # 没有可以启动的停止风机
+        if start_fan_id is None:
+            return
+        if start_fan_id < 4:
+            txt = f"一期风机轮换：{stop_fan_id}号连续运行{run_seconds / 86400:.2f}天，准备启动{start_fan_id}号"
+        else:
+            txt = f"二期风机轮换：{stop_fan_id-3}号连续运行{run_seconds / 86400:.2f}天，准备启动{start_fan_id-3}号"
+        self.logger.info(txt)
+        self.mqtt_out['time'] = time.strftime("%Y-%m-%d %H:%M:%S")
+        self.mqtt_out["outputCommand"] = txt
+        self.client.publish(self.m_cfng['mqtt_topic'], self.mqtt_out)
+        
+
+        self.m_cfng[f'fj{start_fan_id}_res'] = self.m_cfng[f'fj{stop_fan_id}_fk']
+        self.client.publish(self.m_cfng['write_topic'], {
+        self.devicenames[f'fj{start_fan_id}_res'] : {
+            self.names[f'fj{start_fan_id}_run_cmd']: 1}
+        })
+        while(self.m_cfng[f'fj{start_fan_id}_gd'] < self.m_cfng['zs_min']):
+            time.sleep(1)
+        self.client.publish(self.m_cfng['write_topic'], {
+        self.devicenames[f'fj{start_fan_id}_res'] : {
+            self.names[f'fj{start_fan_id}_run_cmd']: 2,
+            self.names[f'fj{start_fan_id}_res']: self.m_cfng[f'fj{start_fan_id}_res']}
+        })
+        
+        # 确认它启动后，再停止 stop_fan_id
+        self.m_cfng[f'fj{stop_fan_id}_run_cmd'] = 3
+        self.m_cfng[f'fj{stop_fan_id}_res'] = 0
+        self.client.publish(self.m_cfng['write_topic'], {
+        self.devicenames[f'fj{stop_fan_id}_res'] : {
+            self.names[f'fj{stop_fan_id}_run_cmd']: self.m_cfng[f'fj{stop_fan_id}_run_cmd'],
+            self.names[f'fj{stop_fan_id}_res']: self.m_cfng[f'fj{stop_fan_id}_res']
+        }
+        })
 
     def get_fan_runtime_seconds(self, fan_id=None):
         self._update_fan_runtime()
@@ -209,6 +289,10 @@ class HGBaoqiModel(WaterControlModel):
             # 二三期控制
             self._phase_control(2, self.fc_model2)
             
+            self.check_fan_switch({1,2,3})
+            self.check_fan_switch({4,5})
+            self.check_fan_switch({6,7,8,9})
+            
             # 一期风机启停
             runing_fj_1_count = 0   # 开始数量
             runing_fj_high_1_count = 0  # 开启并且高SV值数量
@@ -264,7 +348,7 @@ class HGBaoqiModel(WaterControlModel):
                 if high_elapsed >= self.m_cfng['min_time'] and runing_fj_low_1_count == 3:
                     self.mqtt_out['time'] = time.strftime("%Y-%m-%d %H:%M:%S")
                     i = self.get_earliest_running_fan_id([1, 2, 3])
-                    self.mqtt_out["outputCommand"] = f"一期1号生物池DO值持续高于5，30分钟，需减少一台风机{i}#"
+                    self.mqtt_out["outputCommand"] = f"一期1号生物池DO值持续高于3.5，30分钟，需减少一台风机{i}#"
                     self.m_cfng[f'fj{i}_run_cmd'] = 3
                     self.m_cfng[f'fj{i}_res'] = 0
                     self.client.publish(self.m_cfng['write_topic'], {
@@ -302,7 +386,7 @@ class HGBaoqiModel(WaterControlModel):
                 if low_elapsed >= self.m_cfng['min_time'] and runing_fj_high_2_count == 3:
                     self.mqtt_out['time'] = time.strftime("%Y-%m-%d %H:%M:%S")
                     i = self.get_earliest_stopped_fan_id([6, 7, 8, 9])
-                    self.mqtt_out["outputCommand"] = f"二期生物池DO值持续低于0.6，30分钟，需增加一台风机{i}#"
+                    self.mqtt_out["outputCommand"] = f"二期生物池DO值持续低于0.6，30分钟，需增加一台风机{i-3}#"
                     # self.m_cfng[f'fj{i}_run_cmd'] = 1
                     self.m_cfng[f'fj{i}_res'] = float(np.clip(self.m_cfng[f'fj{i}_fk'],self.m_cfng['min2'],self.m_cfng['max2']))
                     self.client.publish(self.m_cfng['write_topic'], {
@@ -333,7 +417,7 @@ class HGBaoqiModel(WaterControlModel):
                 if high_elapsed >= self.m_cfng['min_time'] and runing_fj_low_2_count == 4:
                     self.mqtt_out['time'] = time.strftime("%Y-%m-%d %H:%M:%S")
                     i = self.get_earliest_running_fan_id([6, 7, 8, 9])
-                    self.mqtt_out["outputCommand"] = f"二期生物池DO值持续高于5，30分钟，需减少一台风机{i}#"
+                    self.mqtt_out["outputCommand"] = f"二期生物池DO值持续高于3.5，30分钟，需减少一台风机{i-3}#"
                     self.m_cfng[f'fj{i}_run_cmd'] = 3
                     self.m_cfng[f'fj{i}_res'] = 0
                     self.client.publish(self.m_cfng['write_topic'], {
