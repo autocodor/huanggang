@@ -4,7 +4,7 @@ networks:
 
 services:
   baoqi-c:  #曝气
-    image: swr.cn-south-1.myhuaweicloud.com/xintong/ai-baoqi-hg:1.0.0
+    image: swr.cn-south-1.myhuaweicloud.com/xintong/ai-baoqi-hg:1.0.1
     container_name: baoqi-c
     environment:
       - TZ=Asia/Shanghai
