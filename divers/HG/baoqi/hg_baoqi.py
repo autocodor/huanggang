@@ -65,7 +65,7 @@ class HGBaoqiModel(WaterControlModel):
         self.fan_runtime_thread = threading.Thread(target=self._fan_runtime_loop)
         self.fan_runtime_thread.daemon = True
         self.fan_runtime_thread.start()
-        
+        self.fan_runtime_initialized = False
         self.switch_run_seconds = 7 * 24 * 60 * 60
 
     def _fan_runtime_loop(self):
@@ -79,6 +79,30 @@ class HGBaoqiModel(WaterControlModel):
     def _update_fan_runtime(self):
         now = time.time()
         with self.fan_runtime_lock:
+            if not all(f'run_io{fan_id}' in self.m_cfng for fan_id in self.fan_ids):
+                return  
+            # 第一次执行时，根据当前电流初始化风机状态
+            if not self.fan_runtime_initialized:
+                for fan_id in self.fan_ids:
+                    current = float(
+                        self.m_cfng.get(f'run_io{fan_id}', 0) or 0
+                    )
+                    is_running = current > self.fan_run_threshold
+
+                    self.fan_runtime_state[fan_id] = is_running
+
+                    if is_running:
+                        self.fan_runtime_start[fan_id] = now
+                        self.fan_runtime_stop[fan_id] = None
+                    else:
+                        self.fan_runtime_start[fan_id] = None
+                        self.fan_runtime_stop[fan_id] = now
+
+                    self.m_cfng[f'fj{fan_id}_runtime_seconds'] = 0.0
+
+                self.fan_runtime_initialized = True
+                return
+            
             for fan_id in self.fan_ids:
                 is_running = float(self.m_cfng.get(f'run_io{fan_id}', 0) or 0) > self.fan_run_threshold
                 was_running = self.fan_runtime_state[fan_id]
@@ -206,23 +230,22 @@ class HGBaoqiModel(WaterControlModel):
                 if low_elapsed >= self.m_cfng['min_time'] and runing_fj_high_1_count == 2:
                     
                     self.mqtt_out['time'] = time.strftime("%Y-%m-%d %H:%M:%S")
-                    txt = "一期2号生物池DO值持续低于0.6，30分钟，需增加一台风机#"
+                    i= self.get_earliest_stopped_fan_id([1, 2, 3])
+                    txt = f"一期2号生物池DO值持续低于0.6，30分钟，需增加一台风机{i}#"
                     self.mqtt_out["outputCommand"] = txt
                     self.logger.debug(txt)
-                    i= self.get_earliest_stopped_fan_id([1, 2, 3])
                     # self.m_cfng[f'fj{i}_run_cmd'] = 1
-                    self.m_cfng[f'fj{i}_res'] = np.clip(self.m_cfng[f'fj{i}_fk'],self.m_cfng['min1'],self.m_cfng['max1'])
+                    self.m_cfng[f'fj{i}_res'] = float(np.clip(self.m_cfng[f'fj{i}_fk'],self.m_cfng['min1'],self.m_cfng['max1']))
                     self.client.publish(self.m_cfng['write_topic'], {
                     self.devicenames[f'fj{i}_res'] : {
                         self.names[f'fj{i}_run_cmd']: 1}
                     })
-                    while(self.m_cfng[f'fj{i}_gd'] < 15000):
+                    while(self.m_cfng[f'fj{i}_gd'] < self.m_cfng['zs_min']):
                         time.sleep(1)
                     self.client.publish(self.m_cfng['write_topic'], {
                     self.devicenames[f'fj{i}_res'] : {
                         self.names[f'fj{i}_run_cmd']: 2,
-                        self.names[f'fj{i}_res']: self.m_cfng[f'fj{i}_res'],
-                    }
+                        self.names[f'fj{i}_res']: self.m_cfng[f'fj{i}_res']}
                     })
                     self.client.publish(self.m_cfng['mqtt_topic'], self.mqtt_out)
                     self.low_start_time_1 = None
@@ -240,14 +263,14 @@ class HGBaoqiModel(WaterControlModel):
 
                 if high_elapsed >= self.m_cfng['min_time'] and runing_fj_low_1_count == 3:
                     self.mqtt_out['time'] = time.strftime("%Y-%m-%d %H:%M:%S")
-                    self.mqtt_out["outputCommand"] = "一期1号生物池DO值持续高于5，30分钟，需减少一台风机#"
                     i = self.get_earliest_running_fan_id([1, 2, 3])
+                    self.mqtt_out["outputCommand"] = f"一期1号生物池DO值持续高于5，30分钟，需减少一台风机{i}#"
                     self.m_cfng[f'fj{i}_run_cmd'] = 3
                     self.m_cfng[f'fj{i}_res'] = 0
                     self.client.publish(self.m_cfng['write_topic'], {
                     self.devicenames[f'fj{i}_res'] : {
                         self.names[f'fj{i}_run_cmd']: self.m_cfng[f'fj{i}_run_cmd'],
-                        self.names[f'fj{i}_res']: self.m_cfng[f'fj{i}_res'],
+                        self.names[f'fj{i}_res']: self.m_cfng[f'fj{i}_res']
                     }
                     })
                     self.client.publish(self.m_cfng['mqtt_topic'], self.mqtt_out)
@@ -278,19 +301,19 @@ class HGBaoqiModel(WaterControlModel):
 
                 if low_elapsed >= self.m_cfng['min_time'] and runing_fj_high_2_count == 3:
                     self.mqtt_out['time'] = time.strftime("%Y-%m-%d %H:%M:%S")
-                    self.mqtt_out["outputCommand"] = "二期生物池DO值持续低于0.6，30分钟，需增加一台风机#"
                     i = self.get_earliest_stopped_fan_id([6, 7, 8, 9])
+                    self.mqtt_out["outputCommand"] = f"二期生物池DO值持续低于0.6，30分钟，需增加一台风机{i}#"
                     # self.m_cfng[f'fj{i}_run_cmd'] = 1
-                    self.m_cfng[f'fj{i}_res'] = np.clip(self.m_cfng[f'fj{i}_fk'],self.m_cfng['min1'],self.m_cfng['max1'])
+                    self.m_cfng[f'fj{i}_res'] = float(np.clip(self.m_cfng[f'fj{i}_fk'],self.m_cfng['min2'],self.m_cfng['max2']))
                     self.client.publish(self.m_cfng['write_topic'], {
                     self.devicenames[f'fj{i}_res'] : {
                         self.names[f'fj{i}_run_cmd']: 1}})
-                    while(self.m_cfng[f'fj{i}_gd'] < 15000):
+                    while(self.m_cfng[f'fj{i}_gd'] < self.m_cfng['zs_min']):
                         time.sleep(1)
                     self.client.publish(self.m_cfng['write_topic'], {
                     self.devicenames[f'fj{i}_res'] : {
                         self.names[f'fj{i}_run_cmd']: 2,
-                        self.names[f'fj{i}_res']: self.m_cfng[f'fj{i}_res'],
+                        self.names[f'fj{i}_res']: self.m_cfng[f'fj{i}_res']
                     }
                     })
                     self.client.publish(self.m_cfng['mqtt_topic'], self.mqtt_out)
@@ -309,14 +332,14 @@ class HGBaoqiModel(WaterControlModel):
 
                 if high_elapsed >= self.m_cfng['min_time'] and runing_fj_low_2_count == 4:
                     self.mqtt_out['time'] = time.strftime("%Y-%m-%d %H:%M:%S")
-                    self.mqtt_out["outputCommand"] = "二期生物池DO值持续高于5，30分钟，需减少一台风机#"
                     i = self.get_earliest_running_fan_id([6, 7, 8, 9])
+                    self.mqtt_out["outputCommand"] = f"二期生物池DO值持续高于5，30分钟，需减少一台风机{i}#"
                     self.m_cfng[f'fj{i}_run_cmd'] = 3
                     self.m_cfng[f'fj{i}_res'] = 0
                     self.client.publish(self.m_cfng['write_topic'], {
                     self.devicenames[f'fj{i}_res'] : {
                         self.names[f'fj{i}_run_cmd']: self.m_cfng[f'fj{i}_run_cmd'],
-                        self.names[f'fj{i}_res']: self.m_cfng[f'fj{i}_res'],
+                        self.names[f'fj{i}_res']: self.m_cfng[f'fj{i}_res']
                     }
                     })
                     self.client.publish(self.m_cfng['mqtt_topic'], self.mqtt_out)

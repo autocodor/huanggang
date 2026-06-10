@@ -24,7 +24,8 @@
     "do_delta": 0.07,
     "do1_diff": 0,
     "max_err": 0.4,
-    "min_time":1800
+    "min_time":18,
+    "zs_min":0
   },
   "data_in": {
     "虚拟设备":{
