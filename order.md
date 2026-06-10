@@ -14,4 +14,4 @@ docker compose stop
 
 docker compose restart
 
-docker logs **-f** baoqi-c
+docker logs -f baoqi-c
