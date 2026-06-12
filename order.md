@@ -15,3 +15,11 @@ docker compose stop
 docker compose restart
 
 docker logs -f baoqi-c
+
+docker save -o helloworld-scratch.tar helloworld-scratch
+
+zip helloworld-scratch.zip helloworld-scratch.tar
+
+unzip helloworld-scratch.zip
+
+docker load -i helloworld-scratch.tar
