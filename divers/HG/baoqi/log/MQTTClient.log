@@ -4564,3 +4564,182 @@
 2026-06-10 14:39:34,041 - MQTTClient - 141 - DEBUG - Connected to 10.7.7.62 successfully
 2026-06-10 14:39:34,042 - MQTTClient - 174 - DEBUG - Subscribed with QOS: (0,)
 2026-06-10 14:39:34,057 - MQTTClient - 174 - DEBUG - Subscribed with QOS: (0,)
+2026-06-15 14:05:59,965 - MQTTClient - 141 - DEBUG - Connected to 192.168.100.182 successfully
+2026-06-15 14:05:59,998 - MQTTClient - 174 - DEBUG - Subscribed with QOS: (0,)
+2026-06-15 14:06:00,051 - MQTTClient - 174 - DEBUG - Subscribed with QOS: (0,)
+2026-06-15 14:06:55,289 - MQTTClient - 141 - DEBUG - Connected to 192.168.100.182 successfully
+2026-06-15 14:06:55,294 - MQTTClient - 174 - DEBUG - Subscribed with QOS: (0,)
+2026-06-15 14:07:34,088 - MQTTClient - 141 - DEBUG - Connected to 192.168.100.182 successfully
+2026-06-15 14:07:34,094 - MQTTClient - 174 - DEBUG - Subscribed with QOS: (0,)
+2026-06-15 14:08:07,156 - MQTTClient - 141 - DEBUG - Connected to 192.168.100.182 successfully
+2026-06-15 14:08:07,167 - MQTTClient - 174 - DEBUG - Subscribed with QOS: (0,)
+2026-06-15 14:08:15,099 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f1\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:08:15,099 - MQTTClient - 177 - DEBUG - Message published (mid=6)
+2026-06-15 14:08:15,101 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f1\u53f7\u98ce\u673aSV\u503c": 85.0}}
+2026-06-15 14:08:15,101 - MQTTClient - 177 - DEBUG - Message published (mid=7)
+2026-06-15 14:08:15,101 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f3\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:08:15,102 - MQTTClient - 177 - DEBUG - Message published (mid=8)
+2026-06-15 14:08:15,104 - MQTTClient - 177 - DEBUG - Message published (mid=9)
+2026-06-15 14:08:15,104 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f1\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:08:15,104 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f3\u53f7\u98ce\u673aSV\u503c": 85.0}}
+2026-06-15 14:08:15,104 - MQTTClient - 177 - DEBUG - Message published (mid=10)
+2026-06-15 14:08:15,106 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f1\u53f7\u98ce\u673aSV\u503c": 85.1}}
+2026-06-15 14:08:15,106 - MQTTClient - 177 - DEBUG - Message published (mid=11)
+2026-06-15 14:08:15,107 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f3\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:08:15,108 - MQTTClient - 177 - DEBUG - Message published (mid=12)
+2026-06-15 14:08:15,109 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f3\u53f7\u98ce\u673aSV\u503c": 85.1}}
+2026-06-15 14:08:15,110 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f6\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:08:15,110 - MQTTClient - 177 - DEBUG - Message published (mid=13)
+2026-06-15 14:08:15,112 - MQTTClient - 177 - DEBUG - Message published (mid=14)
+2026-06-15 14:08:15,113 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f6\u53f7\u98ce\u673aSV\u503c": 85.1}}
+2026-06-15 14:08:15,113 - MQTTClient - 177 - DEBUG - Message published (mid=15)
+2026-06-15 14:08:15,113 - MQTTClient - 99 - DEBUG - Published: /idms/api/v1/createControlX - {"type": "\u66dd\u6c14\u667a\u80fd\u4f53", "time": "2026-06-15 14:08:15", "algorithmVersion": "v1.0.0", "controller": "\u9ec4\u5188AI\u7b97\u6cd5\u63a7\u5236", "outputCommand": "\u4e00\u671f\u751f\u7269\u6c60#\u5b9e\u65f6\uff1a\u4e00\u671f\u6eb6\u89e3\u6c27\uff1a3.57mg/L\uff0c\u76ee\u6807\u503c\uff1a2mg/L#\u4e00\u671f1\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a90%\uff0c\u4e0a\u9650\uff1a100%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a82.8%\u4e00\u671f3\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a90%\uff0c\u4e0a\u9650\uff1a100%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a82.8%\u4e8c\u671f\u751f\u7269\u6c60#\u5b9e\u65f6\uff1a\u4e8c\u671f\u6eb6\u89e3\u6c27\uff1a1.79mg/L\uff0c\u76ee\u6807\u503c\uff1a2mg/L#\u4e8c\u671f1\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a83%\uff0c\u4e0a\u9650\uff1a98%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a85.1%\u4e8c\u671f3\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a83%\uff0c\u4e0a\u9650\uff1a98%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a85.1%\u4e8c\u671f6\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a83%\uff0c\u4e0a\u9650\uff1a98%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a85.1%"}
+2026-06-15 14:08:15,114 - MQTTClient - 177 - DEBUG - Message published (mid=16)
+2026-06-15 14:08:30,103 - MQTTClient - 177 - DEBUG - Message published (mid=17)
+2026-06-15 14:08:30,104 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f1\u53f7\u98ce\u673aSV\u503c": 82.8}}
+2026-06-15 14:08:30,107 - MQTTClient - 177 - DEBUG - Message published (mid=18)
+2026-06-15 14:08:30,107 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f3\u53f7\u98ce\u673aSV\u503c": 82.8}}
+2026-06-15 14:08:41,742 - MQTTClient - 141 - DEBUG - Connected to 192.168.100.182 successfully
+2026-06-15 14:08:41,748 - MQTTClient - 174 - DEBUG - Subscribed with QOS: (0,)
+2026-06-15 14:08:49,058 - MQTTClient - 141 - DEBUG - Connected to 192.168.100.182 successfully
+2026-06-15 14:08:49,066 - MQTTClient - 174 - DEBUG - Subscribed with QOS: (0,)
+2026-06-15 14:10:15,290 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f1\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:10:15,290 - MQTTClient - 177 - DEBUG - Message published (mid=21)
+2026-06-15 14:10:15,292 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f1\u53f7\u98ce\u673aSV\u503c": 85.0}}
+2026-06-15 14:10:15,292 - MQTTClient - 177 - DEBUG - Message published (mid=22)
+2026-06-15 14:10:15,293 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f3\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:10:15,294 - MQTTClient - 177 - DEBUG - Message published (mid=23)
+2026-06-15 14:10:15,296 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f3\u53f7\u98ce\u673aSV\u503c": 85.0}}
+2026-06-15 14:10:15,296 - MQTTClient - 177 - DEBUG - Message published (mid=24)
+2026-06-15 14:10:15,298 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f1\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:10:15,298 - MQTTClient - 177 - DEBUG - Message published (mid=25)
+2026-06-15 14:10:15,301 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f1\u53f7\u98ce\u673aSV\u503c": 86.8}}
+2026-06-15 14:10:15,301 - MQTTClient - 177 - DEBUG - Message published (mid=26)
+2026-06-15 14:10:15,302 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f3\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:10:15,303 - MQTTClient - 177 - DEBUG - Message published (mid=27)
+2026-06-15 14:10:15,306 - MQTTClient - 177 - DEBUG - Message published (mid=28)
+2026-06-15 14:10:15,306 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f3\u53f7\u98ce\u673aSV\u503c": 86.8}}
+2026-06-15 14:10:15,307 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f6\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:10:15,307 - MQTTClient - 177 - DEBUG - Message published (mid=29)
+2026-06-15 14:10:15,309 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f6\u53f7\u98ce\u673aSV\u503c": 86.8}}
+2026-06-15 14:10:15,310 - MQTTClient - 177 - DEBUG - Message published (mid=30)
+2026-06-15 14:10:15,310 - MQTTClient - 99 - DEBUG - Published: /idms/api/v1/createControlX - {"type": "\u66dd\u6c14\u667a\u80fd\u4f53", "time": "2026-06-15 14:10:15", "algorithmVersion": "v1.0.0", "controller": "\u9ec4\u5188AI\u7b97\u6cd5\u63a7\u5236", "outputCommand": "\u4e00\u671f\u751f\u7269\u6c60#\u5b9e\u65f6\uff1a\u4e00\u671f\u6eb6\u89e3\u6c27\uff1a3.52mg/L\uff0c\u76ee\u6807\u503c\uff1a2mg/L#\u4e00\u671f1\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a90%\uff0c\u4e0a\u9650\uff1a100%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a82.9%\u4e00\u671f3\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a90%\uff0c\u4e0a\u9650\uff1a100%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a82.9%\u4e8c\u671f\u751f\u7269\u6c60#\u5b9e\u65f6\uff1a\u4e8c\u671f\u6eb6\u89e3\u6c27\uff1a1.61mg/L\uff0c\u76ee\u6807\u503c\uff1a2mg/L#\u4e8c\u671f1\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a83%\uff0c\u4e0a\u9650\uff1a98%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a86.8%\u4e8c\u671f3\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a83%\uff0c\u4e0a\u9650\uff1a98%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a86.8%\u4e8c\u671f6\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a83%\uff0c\u4e0a\u9650\uff1a98%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a86.8%"}
+2026-06-15 14:10:15,310 - MQTTClient - 177 - DEBUG - Message published (mid=31)
+2026-06-15 14:10:30,295 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f1\u53f7\u98ce\u673aSV\u503c": 82.9}}
+2026-06-15 14:10:30,295 - MQTTClient - 177 - DEBUG - Message published (mid=32)
+2026-06-15 14:10:30,299 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f3\u53f7\u98ce\u673aSV\u503c": 82.9}}
+2026-06-15 14:10:30,300 - MQTTClient - 177 - DEBUG - Message published (mid=33)
+2026-06-15 14:12:15,384 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f1\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:12:15,384 - MQTTClient - 177 - DEBUG - Message published (mid=34)
+2026-06-15 14:12:15,386 - MQTTClient - 177 - DEBUG - Message published (mid=35)
+2026-06-15 14:12:15,386 - MQTTClient - 177 - DEBUG - Message published (mid=36)
+2026-06-15 14:12:15,386 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f1\u53f7\u98ce\u673aSV\u503c": 83.0}}
+2026-06-15 14:12:15,386 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f3\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:12:15,389 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f3\u53f7\u98ce\u673aSV\u503c": 83.0}}
+2026-06-15 14:12:15,389 - MQTTClient - 177 - DEBUG - Message published (mid=37)
+2026-06-15 14:12:15,389 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f1\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:12:15,390 - MQTTClient - 177 - DEBUG - Message published (mid=38)
+2026-06-15 14:12:15,392 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f1\u53f7\u98ce\u673aSV\u503c": 85.2}}
+2026-06-15 14:12:15,392 - MQTTClient - 177 - DEBUG - Message published (mid=39)
+2026-06-15 14:12:15,392 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f3\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:12:15,393 - MQTTClient - 177 - DEBUG - Message published (mid=40)
+2026-06-15 14:12:15,394 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f3\u53f7\u98ce\u673aSV\u503c": 85.2}}
+2026-06-15 14:12:15,394 - MQTTClient - 177 - DEBUG - Message published (mid=41)
+2026-06-15 14:12:15,394 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f6\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:12:15,395 - MQTTClient - 177 - DEBUG - Message published (mid=42)
+2026-06-15 14:12:15,396 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f6\u53f7\u98ce\u673aSV\u503c": 85.2}}
+2026-06-15 14:12:15,396 - MQTTClient - 177 - DEBUG - Message published (mid=43)
+2026-06-15 14:12:15,396 - MQTTClient - 99 - DEBUG - Published: /idms/api/v1/createControlX - {"type": "\u66dd\u6c14\u667a\u80fd\u4f53", "time": "2026-06-15 14:12:15", "algorithmVersion": "v1.0.0", "controller": "\u9ec4\u5188AI\u7b97\u6cd5\u63a7\u5236", "outputCommand": "\u4e00\u671f\u751f\u7269\u6c60#\u5b9e\u65f6\uff1a\u4e00\u671f\u6eb6\u89e3\u6c27\uff1a3.5mg/L\uff0c\u76ee\u6807\u503c\uff1a2mg/L#\u4e00\u671f1\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a88%\uff0c\u4e0a\u9650\uff1a100%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a81.0%\u4e00\u671f3\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a88%\uff0c\u4e0a\u9650\uff1a100%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a81.0%\u4e8c\u671f\u751f\u7269\u6c60#\u5b9e\u65f6\uff1a\u4e8c\u671f\u6eb6\u89e3\u6c27\uff1a1.78mg/L\uff0c\u76ee\u6807\u503c\uff1a2mg/L#\u4e8c\u671f1\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a83%\uff0c\u4e0a\u9650\uff1a98%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a85.2%\u4e8c\u671f3\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a83%\uff0c\u4e0a\u9650\uff1a98%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a85.2%\u4e8c\u671f6\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a83%\uff0c\u4e0a\u9650\uff1a98%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a85.2%"}
+2026-06-15 14:12:15,397 - MQTTClient - 177 - DEBUG - Message published (mid=44)
+2026-06-15 14:12:30,388 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f1\u53f7\u98ce\u673aSV\u503c": 81.0}}
+2026-06-15 14:12:30,388 - MQTTClient - 177 - DEBUG - Message published (mid=45)
+2026-06-15 14:12:30,391 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f3\u53f7\u98ce\u673aSV\u503c": 81.0}}
+2026-06-15 14:12:30,391 - MQTTClient - 177 - DEBUG - Message published (mid=46)
+2026-06-15 14:13:56,169 - MQTTClient - 141 - DEBUG - Connected to 192.168.100.182 successfully
+2026-06-15 14:13:56,181 - MQTTClient - 174 - DEBUG - Subscribed with QOS: (0,)
+2026-06-15 14:14:15,608 - MQTTClient - 177 - DEBUG - Message published (mid=48)
+2026-06-15 14:14:15,608 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f1\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:14:15,613 - MQTTClient - 177 - DEBUG - Message published (mid=49)
+2026-06-15 14:14:15,613 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f1\u53f7\u98ce\u673aSV\u503c": 83.0}}
+2026-06-15 14:14:15,613 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f3\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:14:15,614 - MQTTClient - 177 - DEBUG - Message published (mid=50)
+2026-06-15 14:14:15,619 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f3\u53f7\u98ce\u673aSV\u503c": 83.0}}
+2026-06-15 14:14:15,619 - MQTTClient - 177 - DEBUG - Message published (mid=51)
+2026-06-15 14:14:15,619 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f1\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:14:15,621 - MQTTClient - 177 - DEBUG - Message published (mid=52)
+2026-06-15 14:14:15,625 - MQTTClient - 177 - DEBUG - Message published (mid=53)
+2026-06-15 14:14:15,626 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f3\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:14:15,631 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f6\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:14:15,631 - MQTTClient - 177 - DEBUG - Message published (mid=54)
+2026-06-15 14:14:15,635 - MQTTClient - 99 - DEBUG - Published: /idms/api/v1/createControlX - {"type": "\u66dd\u6c14\u667a\u80fd\u4f53", "time": "2026-06-15 14:14:15", "algorithmVersion": "v1.0.0", "controller": "\u9ec4\u5188AI\u7b97\u6cd5\u63a7\u5236", "outputCommand": "\u4e00\u671f\u751f\u7269\u6c60#\u5b9e\u65f6\uff1a\u4e00\u671f\u6eb6\u89e3\u6c27\uff1a3.33mg/L\uff0c\u76ee\u6807\u503c\uff1a2mg/L#\u4e00\u671f1\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a88%\uff0c\u4e0a\u9650\uff1a100%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a81.2%\u4e00\u671f3\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a88%\uff0c\u4e0a\u9650\uff1a100%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a81.2%\u4e8c\u671f\u751f\u7269\u6c60#\u5b9e\u65f6\uff1a\u4e8c\u671f\u6eb6\u89e3\u6c27\uff1a2.0mg/L\uff0c\u76ee\u6807\u503c\uff1a2mg/L#\u4e8c\u671f1\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a83%\uff0c\u4e0a\u9650\uff1a98%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a83.0%\u4e8c\u671f3\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a83%\uff0c\u4e0a\u9650\uff1a98%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a83.0%\u4e8c\u671f6\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a83%\uff0c\u4e0a\u9650\uff1a98%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a83.0%"}
+2026-06-15 14:14:15,635 - MQTTClient - 177 - DEBUG - Message published (mid=55)
+2026-06-15 14:14:30,616 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f1\u53f7\u98ce\u673aSV\u503c": 81.2}}
+2026-06-15 14:14:30,616 - MQTTClient - 177 - DEBUG - Message published (mid=56)
+2026-06-15 14:14:30,621 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f3\u53f7\u98ce\u673aSV\u503c": 81.2}}
+2026-06-15 14:14:30,621 - MQTTClient - 177 - DEBUG - Message published (mid=57)
+2026-06-15 14:16:15,845 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f1\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:16:15,845 - MQTTClient - 177 - DEBUG - Message published (mid=58)
+2026-06-15 14:16:15,849 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f1\u53f7\u98ce\u673aSV\u503c": 85.7}}
+2026-06-15 14:16:15,849 - MQTTClient - 177 - DEBUG - Message published (mid=59)
+2026-06-15 14:16:15,850 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f3\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:16:15,854 - MQTTClient - 177 - DEBUG - Message published (mid=60)
+2026-06-15 14:16:15,857 - MQTTClient - 177 - DEBUG - Message published (mid=61)
+2026-06-15 14:16:15,857 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f1\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:16:15,858 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f3\u53f7\u98ce\u673aSV\u503c": 85.7}}
+2026-06-15 14:16:15,859 - MQTTClient - 177 - DEBUG - Message published (mid=62)
+2026-06-15 14:16:15,867 - MQTTClient - 177 - DEBUG - Message published (mid=63)
+2026-06-15 14:16:15,867 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f1\u53f7\u98ce\u673aSV\u503c": 81.5}}
+2026-06-15 14:16:15,869 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f3\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:16:15,869 - MQTTClient - 177 - DEBUG - Message published (mid=64)
+2026-06-15 14:16:15,873 - MQTTClient - 177 - DEBUG - Message published (mid=65)
+2026-06-15 14:16:15,874 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f3\u53f7\u98ce\u673aSV\u503c": 81.5}}
+2026-06-15 14:16:15,874 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f6\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:16:15,875 - MQTTClient - 177 - DEBUG - Message published (mid=66)
+2026-06-15 14:16:15,878 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f6\u53f7\u98ce\u673aSV\u503c": 81.5}}
+2026-06-15 14:16:15,878 - MQTTClient - 177 - DEBUG - Message published (mid=67)
+2026-06-15 14:16:15,878 - MQTTClient - 99 - DEBUG - Published: /idms/api/v1/createControlX - {"type": "\u66dd\u6c14\u667a\u80fd\u4f53", "time": "2026-06-15 14:16:15", "algorithmVersion": "v1.0.0", "controller": "\u9ec4\u5188AI\u7b97\u6cd5\u63a7\u5236", "outputCommand": "\u4e00\u671f\u751f\u7269\u6c60#\u5b9e\u65f6\uff1a\u4e00\u671f\u6eb6\u89e3\u6c27\uff1a3.11mg/L\uff0c\u76ee\u6807\u503c\uff1a2mg/L#\u4e00\u671f1\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a88%\uff0c\u4e0a\u9650\uff1a100%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a85.7%\u4e00\u671f3\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a88%\uff0c\u4e0a\u9650\uff1a100%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a85.7%\u4e8c\u671f\u751f\u7269\u6c60#\u5b9e\u65f6\uff1a\u4e8c\u671f\u6eb6\u89e3\u6c27\uff1a2.15mg/L\uff0c\u76ee\u6807\u503c\uff1a2mg/L#\u4e8c\u671f1\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a83%\uff0c\u4e0a\u9650\uff1a98%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a81.5%\u4e8c\u671f3\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a83%\uff0c\u4e0a\u9650\uff1a98%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a81.5%\u4e8c\u671f6\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a83%\uff0c\u4e0a\u9650\uff1a98%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a81.5%"}
+2026-06-15 14:16:15,880 - MQTTClient - 177 - DEBUG - Message published (mid=68)
+2026-06-15 14:18:16,053 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f1\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:18:16,053 - MQTTClient - 177 - DEBUG - Message published (mid=69)
+2026-06-15 14:18:16,057 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f1\u53f7\u98ce\u673aSV\u503c": 85.8}}
+2026-06-15 14:18:16,057 - MQTTClient - 177 - DEBUG - Message published (mid=70)
+2026-06-15 14:18:16,058 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f3\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:18:16,059 - MQTTClient - 177 - DEBUG - Message published (mid=71)
+2026-06-15 14:18:16,062 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f3\u53f7\u98ce\u673aSV\u503c": 85.8}}
+2026-06-15 14:18:16,062 - MQTTClient - 177 - DEBUG - Message published (mid=72)
+2026-06-15 14:18:16,063 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f1\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:18:16,064 - MQTTClient - 177 - DEBUG - Message published (mid=73)
+2026-06-15 14:18:16,067 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f1\u53f7\u98ce\u673aSV\u503c": 80.0}}
+2026-06-15 14:18:16,067 - MQTTClient - 177 - DEBUG - Message published (mid=74)
+2026-06-15 14:18:16,068 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f3\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:18:16,069 - MQTTClient - 177 - DEBUG - Message published (mid=75)
+2026-06-15 14:18:16,071 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f3\u53f7\u98ce\u673aSV\u503c": 80.0}}
+2026-06-15 14:18:16,071 - MQTTClient - 177 - DEBUG - Message published (mid=76)
+2026-06-15 14:18:16,073 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f6\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:18:16,074 - MQTTClient - 177 - DEBUG - Message published (mid=77)
+2026-06-15 14:18:16,076 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f6\u53f7\u98ce\u673aSV\u503c": 80.0}}
+2026-06-15 14:18:16,077 - MQTTClient - 177 - DEBUG - Message published (mid=78)
+2026-06-15 14:18:16,077 - MQTTClient - 99 - DEBUG - Published: /idms/api/v1/createControlX - {"type": "\u66dd\u6c14\u667a\u80fd\u4f53", "time": "2026-06-15 14:18:16", "algorithmVersion": "v1.0.0", "controller": "\u9ec4\u5188AI\u7b97\u6cd5\u63a7\u5236", "outputCommand": "\u4e00\u671f\u751f\u7269\u6c60#\u5b9e\u65f6\uff1a\u4e00\u671f\u6eb6\u89e3\u6c27\uff1a3.11mg/L\uff0c\u76ee\u6807\u503c\uff1a2mg/L#\u4e00\u671f1\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a88%\uff0c\u4e0a\u9650\uff1a100%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a85.8%\u4e00\u671f3\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a88%\uff0c\u4e0a\u9650\uff1a100%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a85.8%\u4e8c\u671f\u751f\u7269\u6c60#\u5b9e\u65f6\uff1a\u4e8c\u671f\u6eb6\u89e3\u6c27\uff1a2.32mg/L\uff0c\u76ee\u6807\u503c\uff1a2mg/L#\u4e8c\u671f1\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a83%\uff0c\u4e0a\u9650\uff1a98%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a80.0%\u4e8c\u671f3\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a83%\uff0c\u4e0a\u9650\uff1a98%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a80.0%\u4e8c\u671f6\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a83%\uff0c\u4e0a\u9650\uff1a98%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a80.0%"}
+2026-06-15 14:18:16,080 - MQTTClient - 177 - DEBUG - Message published (mid=79)
+2026-06-15 14:20:16,227 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f1\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:20:16,227 - MQTTClient - 177 - DEBUG - Message published (mid=80)
+2026-06-15 14:20:16,233 - MQTTClient - 177 - DEBUG - Message published (mid=81)
+2026-06-15 14:20:16,233 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f1\u53f7\u98ce\u673aSV\u503c": 85.6}}
+2026-06-15 14:20:16,233 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f3\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:20:16,234 - MQTTClient - 177 - DEBUG - Message published (mid=82)
+2026-06-15 14:20:16,238 - MQTTClient - 177 - DEBUG - Message published (mid=83)
+2026-06-15 14:20:16,238 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e00\u671f3\u53f7\u98ce\u673aSV\u503c": 85.6}}
+2026-06-15 14:20:16,239 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f1\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:20:16,239 - MQTTClient - 177 - DEBUG - Message published (mid=84)
+2026-06-15 14:20:16,244 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f1\u53f7\u98ce\u673aSV\u503c": 81.2}}
+2026-06-15 14:20:16,244 - MQTTClient - 177 - DEBUG - Message published (mid=85)
+2026-06-15 14:20:16,245 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f3\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:20:16,246 - MQTTClient - 177 - DEBUG - Message published (mid=86)
+2026-06-15 14:20:16,249 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f3\u53f7\u98ce\u673aSV\u503c": 81.2}}
+2026-06-15 14:20:16,249 - MQTTClient - 177 - DEBUG - Message published (mid=87)
+2026-06-15 14:20:16,250 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f6\u53f7\u98ce\u673a\u542f\u505c": 1}}
+2026-06-15 14:20:16,251 - MQTTClient - 177 - DEBUG - Message published (mid=88)
+2026-06-15 14:20:16,253 - MQTTClient - 177 - DEBUG - Message published (mid=89)
+2026-06-15 14:20:16,254 - MQTTClient - 99 - DEBUG - Published: Rpc/ - {"\u865a\u62df\u8bbe\u5907": {"\u4e8c\u671f6\u53f7\u98ce\u673aSV\u503c": 81.2}}
+2026-06-15 14:20:16,254 - MQTTClient - 99 - DEBUG - Published: /idms/api/v1/createControlX - {"type": "\u66dd\u6c14\u667a\u80fd\u4f53", "time": "2026-06-15 14:20:16", "algorithmVersion": "v1.0.0", "controller": "\u9ec4\u5188AI\u7b97\u6cd5\u63a7\u5236", "outputCommand": "\u4e00\u671f\u751f\u7269\u6c60#\u5b9e\u65f6\uff1a\u4e00\u671f\u6eb6\u89e3\u6c27\uff1a3.28mg/L\uff0c\u76ee\u6807\u503c\uff1a2mg/L#\u4e00\u671f1\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a88%\uff0c\u4e0a\u9650\uff1a100%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a85.6%\u4e00\u671f3\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a88%\uff0c\u4e0a\u9650\uff1a100%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a85.6%\u4e8c\u671f\u751f\u7269\u6c60#\u5b9e\u65f6\uff1a\u4e8c\u671f\u6eb6\u89e3\u6c27\uff1a2.17mg/L\uff0c\u76ee\u6807\u503c\uff1a2mg/L#\u4e8c\u671f1\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a83%\uff0c\u4e0a\u9650\uff1a98%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a81.2%\u4e8c\u671f3\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a83%\uff0c\u4e0a\u9650\uff1a98%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a81.2%\u4e8c\u671f6\u53f7\u98ce\u673a\u8fd0\u884c\uff0c\u53cd\u9988\uff1a83%\uff0c\u4e0a\u9650\uff1a98%\uff0c\u4e0b\u9650\uff1a55%\uff0c\u63a7\u5236\u8f93\u51fa\uff1a81.2%"}
+2026-06-15 14:20:16,255 - MQTTClient - 177 - DEBUG - Message published (mid=90)

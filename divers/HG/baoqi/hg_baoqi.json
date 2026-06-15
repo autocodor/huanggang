@@ -1,6 +1,6 @@
 {
   "basic": {
-    "clientip": "10.7.7.62",
+    "clientip": "192.168.100.182",
     "clientport": 1883,
     "read_topic": "ThingsGateway/Variable",
     "mqtt_topic": "/idms/api/v1/createControlX",
