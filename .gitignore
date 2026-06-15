@@ -3,3 +3,7 @@
 .vscode/
 Dockerfile_2
 divers/HG/baoqi/testcv2.py
+divers/HG/baoqi/log/HG_Baoqi.log
+log/HG_Baoqi.log
+divers/HG/baoqi/log/MQTTClient.log
+.gitignore
