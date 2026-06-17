@@ -246,53 +246,8 @@ class HGBaoqiModel(WaterControlModel):
                 return None
 
             return min(stopped_fans, key=stopped_fans.get)
-
-    def control_loop(self, d_time, d_time2):
-        self.update_status(self.m_cfng['do11_lst'], self.m_cfng['do11'], 'do11_onl', self.m_cfng_onl_1)
-        self.update_status(self.m_cfng['do12_lst'], self.m_cfng['do12'], 'do12_onl', self.m_cfng_onl_1)
         
-        self.update_status(self.m_cfng['do2_lst'], self.m_cfng['do2'], 'do2_onl', self.m_cfng_onl_2)
-
-        self.logger.debug(f"DO11:{self.m_cfng_onl_1}")
-        self.logger.debug(f"DO2:{self.m_cfng_onl_2}")
-
-        if d_time >= 45:
-            # 主控制逻辑
-            self.logger.info("活性污泥曝气智能体控制信号：{}".format(self.m_cfng["ai"]))
-
-            if self.m_cfng_onl_1['do11_onl']:
-                self.m_cfng['do1'] = self.m_cfng['do11']
-            elif self.m_cfng_onl_1['do12_onl']:
-                self.m_cfng['do1'] = self.m_cfng['do12'] + self.m_cfng['do1_diff']
-                self.logger.debug("一期2号生物池")
-            else:
-                self.m_cfng['do1'] = self.m_cfng['do1_set']
-                self.logger.debug("一期2个DO异常,不控")
-
-            if self.m_cfng_onl_2['do2_onl']:   
-                self.m_cfng['do2'] = self.m_cfng['do2']
-            else:
-                self.m_cfng['do2'] = self.m_cfng['do2_set']
-                self.logger.debug("二三期DO异常,不控")
-
-
-            self.online_values2 = []
-            if self.m_cfng_onl_1['do11_onl']:
-                self.online_values2.append(self.m_cfng['do11'])
-            if self.m_cfng_onl_1['do12_onl']:
-                self.online_values2.append(self.m_cfng['do12'])
-            if self.online_values2:
-                self.m_cfng['do1_min_t'] = min(self.online_values2)
-
-            # 一期控制
-            self._phase_control(1, self.fc_model2)  
-            # 二三期控制
-            self._phase_control(2, self.fc_model2)
-            
-            self.check_fan_switch({1,2,3})
-            self.check_fan_switch({4,5})
-            self.check_fan_switch({6,7,8,9})
-            
+    def _fan_open_close(self):
             # 一期风机启停
             runing_fj_1_count = 0   # 开始数量
             runing_fj_high_1_count = 0  # 开启并且高SV值数量
@@ -432,7 +387,57 @@ class HGBaoqiModel(WaterControlModel):
             else:
                 if self.high_start_time_2 is not None:
                     self.high_start_time_2 = None 
+
+    def control_loop(self, d_time, d_time2):
+        self.update_status(self.m_cfng['do11_lst'], self.m_cfng['do11'], 'do11_onl', self.m_cfng_onl_1)
+        self.update_status(self.m_cfng['do12_lst'], self.m_cfng['do12'], 'do12_onl', self.m_cfng_onl_1)
+        
+        self.update_status(self.m_cfng['do2_lst'], self.m_cfng['do2'], 'do2_onl', self.m_cfng_onl_2)
+
+        self.logger.debug(f"DO11:{self.m_cfng_onl_1}")
+        self.logger.debug(f"DO2:{self.m_cfng_onl_2}")
+
+        if d_time >= 45:
+            # 主控制逻辑
+            self.logger.info("活性污泥曝气智能体控制信号：{}".format(self.m_cfng["ai"]))
+
+            if self.m_cfng_onl_1['do11_onl']:
+                self.m_cfng['do1'] = self.m_cfng['do11']
+            elif self.m_cfng_onl_1['do12_onl']:
+                self.m_cfng['do1'] = self.m_cfng['do12'] + self.m_cfng['do1_diff']
+                self.logger.debug("一期2号生物池")
+            else:
+                self.m_cfng['do1'] = self.m_cfng['do1_set']
+                self.logger.debug("一期2个DO异常,不控")
+
+            if self.m_cfng_onl_2['do2_onl']:   
+                self.m_cfng['do2'] = self.m_cfng['do2']
+            else:
+                self.m_cfng['do2'] = self.m_cfng['do2_set']
+                self.logger.debug("二三期DO异常,不控")
+
+
+            self.online_values2 = []
+            if self.m_cfng_onl_1['do11_onl']:
+                self.online_values2.append(self.m_cfng['do11'])
+            if self.m_cfng_onl_1['do12_onl']:
+                self.online_values2.append(self.m_cfng['do12'])
+            if self.online_values2:
+                self.m_cfng['do1_min_t'] = min(self.online_values2)
+
+            # 一期控制
+            self._phase_control(1, self.fc_model2)  
+            # 二三期控制
+            self._phase_control(2, self.fc_model2)
+            # 风机启停
+            self._fan_open_close()
             
+            self.check_fan_switch({1,2,3})
+            self.check_fan_switch({4,5})
+            self.check_fan_switch({6,7,8,9})
+            
+            
+           
             
 
             if d_time2 > 100000:
