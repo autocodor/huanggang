@@ -38,9 +38,12 @@ class HGBaoqiModel(WaterControlModel):
         self.m_cfng_onl_1 = {}
         self.m_cfng['do11_lst'] = []
         self.m_cfng['do12_lst'] = []
+        self.m_cfng['NH3_11_lst'] = []
+        self.m_cfng['NH3_12_lst'] = []
         
         self.m_cfng_onl_2 = {}
-        self.m_cfng['do2_lst'] = []
+        self.m_cfng['do22_lst'] = []
+        self.m_cfng['NH3_2_lst'] = []
         
         # 标记是否开始计时低于目标值的DO
         self.low_start_time_1 = None
@@ -48,6 +51,12 @@ class HGBaoqiModel(WaterControlModel):
         
         self.low_start_time_2 = None
         self.high_start_time_2 = None
+        
+        self.open_1_id = None
+        self.close_1_id = None
+        self.open_2_id = None
+        self.close_2_id = None
+        
 
         self.mqtt_out = self.config['mqtt_out']
         
@@ -132,7 +141,13 @@ class HGBaoqiModel(WaterControlModel):
                     continuous_runtime = now - start_time
 
                 self.m_cfng[f'fj{fan_id}_continuous_runtime_seconds'] = round(continuous_runtime, 1)
-                
+    
+    def get_fan_running_state(self, fan_ids):
+        for fan_id in fan_ids:
+            if self.m_cfng[f"run_io{fan_id}"] > self.fan_run_threshold:
+                return True
+        return False
+        
     def get_longest_continuous_running_fan(self, fan_ids):
         self._update_fan_runtime()
 
@@ -184,23 +199,23 @@ class HGBaoqiModel(WaterControlModel):
         self.m_cfng[f'fj{start_fan_id}_res'] = self.m_cfng[f'fj{stop_fan_id}_fk']
         self.client.publish(self.m_cfng['write_topic'], {
         self.devicenames[f'fj{start_fan_id}_res'] : {
-            self.names[f'fj{start_fan_id}_run_cmd']: 1}
+            self.names[f'fj{start_fan_id}_run']: 1}
         })
         while(self.m_cfng[f'fj{start_fan_id}_gd'] < self.m_cfng['zs_min']):
             time.sleep(1)
         self.client.publish(self.m_cfng['write_topic'], {
         self.devicenames[f'fj{start_fan_id}_res'] : {
-            self.names[f'fj{start_fan_id}_run_cmd']: 2,
+            self.names[f'fj{start_fan_id}_loading']: 2,
             self.names[f'fj{start_fan_id}_res']: self.m_cfng[f'fj{start_fan_id}_res']}
         })
         
         # 确认它启动后，再停止 stop_fan_id
-        self.m_cfng[f'fj{stop_fan_id}_run_cmd'] = 3
-        self.m_cfng[f'fj{stop_fan_id}_res'] = 0
+        self.m_cfng[f'fj{stop_fan_id}_stop'] = 3
+        # self.m_cfng[f'fj{stop_fan_id}_res'] = 0
         self.client.publish(self.m_cfng['write_topic'], {
         self.devicenames[f'fj{stop_fan_id}_res'] : {
-            self.names[f'fj{stop_fan_id}_run_cmd']: self.m_cfng[f'fj{stop_fan_id}_run_cmd'],
-            self.names[f'fj{stop_fan_id}_res']: self.m_cfng[f'fj{stop_fan_id}_res']
+            self.names[f'fj{stop_fan_id}_stop']: self.m_cfng[f'fj{stop_fan_id}_stop'],
+            # self.names[f'fj{stop_fan_id}_res']: self.m_cfng[f'fj{stop_fan_id}_res']
         }
         })
 
@@ -260,61 +275,64 @@ class HGBaoqiModel(WaterControlModel):
                     if self.m_cfng[f'fj{i}_fk'] < 60.0:
                         runing_fj_low_1_count += 1
             # 增加一台风机
-            if (runing_fj_1_count == 2 and self.m_cfng['do12'] < 0.6):
+            if (runing_fj_1_count < 3 and runing_fj_high_1_count == runing_fj_1_count and (self.m_cfng['do1'] < self.m_cfng['limit_min_1'] or self.m_cfng['NH3_1'] > self.m_cfng['NH3_max1'])):
                 if self.low_start_time_1 is None:
                     self.low_start_time_1 = time.time()
-                    
+                    self.logger.debug("一期加风机开始计时！")
                 low_elapsed  = time.time() - self.low_start_time_1
-
-                if low_elapsed >= self.m_cfng['min_time'] and runing_fj_high_1_count == 2:
+                self.logger.debug(f"一期计时时长:{low_elapsed}")
+                if low_elapsed >= self.m_cfng['min_time'] :
                     
                     self.mqtt_out['time'] = time.strftime("%Y-%m-%d %H:%M:%S")
                     i= self.get_earliest_stopped_fan_id([1, 2, 3])
-                    txt = f"一期2号生物池DO值持续低于0.6，30分钟，需增加一台风机{i}#"
+                    txt = f"一期生物池DO值持续低于{self.m_cfng['limit_min_1']}或者氨氮值过高，{self.m_cfng['min_time']/60}分钟，需增加一台风机{i}#"
                     self.mqtt_out["outputCommand"] = txt
                     self.logger.debug(txt)
                     # self.m_cfng[f'fj{i}_run_cmd'] = 1
-                    self.m_cfng[f'fj{i}_res'] = float(np.clip(self.m_cfng[f'fj{i}_fk'],self.m_cfng['min1'],self.m_cfng['max1']))
-                    self.client.publish(self.m_cfng['write_topic'], {
-                    self.devicenames[f'fj{i}_res'] : {
-                        self.names[f'fj{i}_run_cmd']: 1}
-                    })
-                    while(self.m_cfng[f'fj{i}_gd'] < self.m_cfng['zs_min']):
-                        time.sleep(1)
-                    self.client.publish(self.m_cfng['write_topic'], {
-                    self.devicenames[f'fj{i}_res'] : {
-                        self.names[f'fj{i}_run_cmd']: 2,
-                        self.names[f'fj{i}_res']: self.m_cfng[f'fj{i}_res']}
-                    })
+                    self.open_1_id = i
+                    # self.m_cfng[f'fj{i}_res'] = float(np.clip(self.m_cfng[f'fj{i}_fk'],self.m_cfng['min1'],self.m_cfng['max1']))
+                    # self.client.publish(self.m_cfng['write_topic'], {
+                    # self.devicenames[f'fj{i}_res'] : {
+                    #     self.names[f'fj{i}_run_cmd']: 1}
+                    # })
+                    # while(self.m_cfng[f'fj{i}_gd'] < self.m_cfng['zs_min']):
+                    #     time.sleep(1)
+                    # self.client.publish(self.m_cfng['write_topic'], {
+                    # self.devicenames[f'fj{i}_res'] : {
+                    #     self.names[f'fj{i}_run_cmd']: 2,
+                    #     self.names[f'fj{i}_res']: self.m_cfng[f'fj{i}_res']}
+                    # })
                     self.client.publish(self.m_cfng['mqtt_topic'], self.mqtt_out)
                     self.low_start_time_1 = None
-                    self.last_dcs_time2 = int(time.time())
+                    # self.last_dcs_time2 = int(time.time())
             else:
                 if self.low_start_time_1 is not None:
                     self.low_start_time_1 = None 
             
             # 减少一台风机
-            if (runing_fj_1_count == 3 and self.m_cfng['do11'] > 3.5):
+            if (runing_fj_1_count > 1 and runing_fj_low_1_count == runing_fj_1_count and self.m_cfng['do1'] > self.m_cfng['limit_max_1'] and self.m_cfng['NH3_1'] < self.m_cfng['NH3_max1'] - 0.5):
                 if self.high_start_time_1 is None:
                     self.high_start_time_1 = time.time()
-                    
+                    self.logger.debug("一期减风机开始计时！")
                 high_elapsed  = time.time() - self.high_start_time_1
-
-                if high_elapsed >= self.m_cfng['min_time'] and runing_fj_low_1_count == 3:
+                self.logger.debug(f"一期计时时长:{high_elapsed}")
+                if high_elapsed >= self.m_cfng['min_time'] :
                     self.mqtt_out['time'] = time.strftime("%Y-%m-%d %H:%M:%S")
                     i = self.get_earliest_running_fan_id([1, 2, 3])
-                    self.mqtt_out["outputCommand"] = f"一期1号生物池DO值持续高于3.5，30分钟，需减少一台风机{i}#"
-                    self.m_cfng[f'fj{i}_run_cmd'] = 3
-                    self.m_cfng[f'fj{i}_res'] = 0
-                    self.client.publish(self.m_cfng['write_topic'], {
-                    self.devicenames[f'fj{i}_res'] : {
-                        self.names[f'fj{i}_run_cmd']: self.m_cfng[f'fj{i}_run_cmd'],
-                        self.names[f'fj{i}_res']: self.m_cfng[f'fj{i}_res']
-                    }
-                    })
+                    self.mqtt_out["outputCommand"] = f"一期生物池DO值持续高于{self.m_cfng['limit_max_1']}，{self.m_cfng['min_time']/60}分钟，需减少一台风机{i}#"
+                    self.logger.debug(f"一期生物池DO值持续高于{self.m_cfng['limit_max_1']}，{self.m_cfng['min_time']/60}分钟，需减少一台风机{i}#")
+                    self.close_1_id = i
+                    # self.m_cfng[f'fj{i}_run_cmd'] = 3
+                    # # self.m_cfng[f'fj{i}_res'] = 0
+                    # self.client.publish(self.m_cfng['write_topic'], {
+                    # self.devicenames[f'fj{i}_res'] : {
+                    #     self.names[f'fj{i}_run_cmd']: self.m_cfng[f'fj{i}_run_cmd'],
+                    #     # self.names[f'fj{i}_res']: self.m_cfng[f'fj{i}_res']
+                    # }
+                    # })
                     self.client.publish(self.m_cfng['mqtt_topic'], self.mqtt_out)
                     self.high_start_time_1 = None
-                    self.last_dcs_time2 = int(time.time())
+                    # self.last_dcs_time2 = int(time.time())
                     
             else:
                 if self.high_start_time_1 is not None:
@@ -332,201 +350,376 @@ class HGBaoqiModel(WaterControlModel):
                     if self.m_cfng[f'fj{i}_fk'] < 60.0:
                         runing_fj_low_2_count += 1
             # 增加一台风机
-            if (runing_fj_2_count == 3 and self.m_cfng['do2'] < 0.6):
+            if (runing_fj_2_count < 5 and runing_fj_high_2_count == runing_fj_2_count and (self.m_cfng['do2'] < self.m_cfng['limit_min_2'] or self.m_cfng['NH3_2'] > self.m_cfng['NH3_max2'])):
                 if self.low_start_time_2 is None:
                     self.low_start_time_2 = time.time()
-                    
+                    self.logger.debug("二期加风机开始计时！")
                 low_elapsed  = time.time() - self.low_start_time_2
-
-                if low_elapsed >= self.m_cfng['min_time'] and runing_fj_high_2_count == 3:
+                self.logger.debug(f"二期计时时长:{low_elapsed}")
+                if low_elapsed >= self.m_cfng['min_time'] :
                     self.mqtt_out['time'] = time.strftime("%Y-%m-%d %H:%M:%S")
-                    i = self.get_earliest_stopped_fan_id([6, 7, 8, 9])
-                    self.mqtt_out["outputCommand"] = f"二期生物池DO值持续低于0.6，30分钟，需增加一台风机{i-3}#"
+                    i = self.get_earliest_stopped_fan_id([4, 5, 6, 7, 8, 9])
+                    # if self.get_fan_running_state([4,5]) is False:
+                    #     i = self.get_earliest_stopped_fan_id([4, 5])
+                    self.mqtt_out["outputCommand"] = f"二期生物池DO值持续低于{self.m_cfng['limit_min_2']}或者氨氮值过高，{self.m_cfng['min_time']/60}分钟，需增加一台风机{i-3}#"
+                    self.logger.debug(f"二期生物池DO值持续低于{self.m_cfng['limit_min_2']}，{self.m_cfng['min_time']/60}分钟，需增加一台风机{i-3}#")
                     # self.m_cfng[f'fj{i}_run_cmd'] = 1
-                    self.m_cfng[f'fj{i}_res'] = float(np.clip(self.m_cfng[f'fj{i}_fk'],self.m_cfng['min2'],self.m_cfng['max2']))
-                    self.client.publish(self.m_cfng['write_topic'], {
-                    self.devicenames[f'fj{i}_res'] : {
-                        self.names[f'fj{i}_run_cmd']: 1}})
-                    while(self.m_cfng[f'fj{i}_gd'] < self.m_cfng['zs_min']):
-                        time.sleep(1)
-                    self.client.publish(self.m_cfng['write_topic'], {
-                    self.devicenames[f'fj{i}_res'] : {
-                        self.names[f'fj{i}_run_cmd']: 2,
-                        self.names[f'fj{i}_res']: self.m_cfng[f'fj{i}_res']
-                    }
-                    })
+                    self.open_2_id = i
+                    # self.m_cfng[f'fj{i}_res'] = float(np.clip(self.m_cfng[f'fj{i}_fk'],self.m_cfng['min2'],self.m_cfng['max2']))
+                    # self.client.publish(self.m_cfng['write_topic'], {
+                    # self.devicenames[f'fj{i}_res'] : {
+                    #     self.names[f'fj{i}_run_cmd']: 1}})
+                    # while(self.m_cfng[f'fj{i}_gd'] < self.m_cfng['zs_min']):
+                    #     time.sleep(1)
+                    # self.client.publish(self.m_cfng['write_topic'], {
+                    # self.devicenames[f'fj{i}_res'] : {
+                    #     self.names[f'fj{i}_run_cmd']: 2,
+                    #     self.names[f'fj{i}_res']: self.m_cfng[f'fj{i}_res']
+                    # }
+                    # })
                     self.client.publish(self.m_cfng['mqtt_topic'], self.mqtt_out)
                     self.low_start_time_2 = None
-                    self.last_dcs_time2 = int(time.time())
+                    # self.last_dcs_time2 = int(time.time())
             else:
                 if self.low_start_time_2 is not None:
                     self.low_start_time_2 = None 
             
             # 减少一台风机
-            if (runing_fj_2_count == 4 and self.m_cfng['do2'] > 3.5):
+            if (runing_fj_2_count > 1 and runing_fj_low_2_count == runing_fj_2_count and self.m_cfng['do2'] > self.m_cfng['limit_max_2'] and self.m_cfng['NH3_2'] < self.m_cfng['NH3_max2'] - 0.5):
                 if self.high_start_time_2 is None:
                     self.high_start_time_2 = time.time()
-                    
+                    self.logger.debug("二期减风机开始计时！")
                 high_elapsed  = time.time() - self.high_start_time_2
-
-                if high_elapsed >= self.m_cfng['min_time'] and runing_fj_low_2_count == 4:
+                self.logger.debug(f"二期计时时长:{high_elapsed}")
+                if high_elapsed >= self.m_cfng['min_time'] :
                     self.mqtt_out['time'] = time.strftime("%Y-%m-%d %H:%M:%S")
-                    i = self.get_earliest_running_fan_id([6, 7, 8, 9])
-                    self.mqtt_out["outputCommand"] = f"二期生物池DO值持续高于3.5，30分钟，需减少一台风机{i-3}#"
-                    self.m_cfng[f'fj{i}_run_cmd'] = 3
-                    self.m_cfng[f'fj{i}_res'] = 0
-                    self.client.publish(self.m_cfng['write_topic'], {
-                    self.devicenames[f'fj{i}_res'] : {
-                        self.names[f'fj{i}_run_cmd']: self.m_cfng[f'fj{i}_run_cmd'],
-                        self.names[f'fj{i}_res']: self.m_cfng[f'fj{i}_res']
-                    }
-                    })
+                    i = self.get_earliest_running_fan_id([4, 5 ,6, 7, 8, 9])
+                    # if runing_fj_2_count == 2:
+                    #     i = self.get_earliest_running_fan_id([4, 5])
+                    self.mqtt_out["outputCommand"] = f"二期生物池DO值持续高于{self.m_cfng['limit_max_2']}，{self.m_cfng['min_time']/60}分钟，需减少一台风机{i-3}#"
+                    self.logger.debug(f"二期生物池DO值持续高于{self.m_cfng['limit_max_2']}，{self.m_cfng['min_time']/60}分钟，需减少一台风机{i-3}#")
+                    self.close_2_id = i
+                    # self.m_cfng[f'fj{i}_run_cmd'] = 3
+                    # # self.m_cfng[f'fj{i}_res'] = 0
+                    # self.client.publish(self.m_cfng['write_topic'], {
+                    # self.devicenames[f'fj{i}_res'] : {
+                    #     self.names[f'fj{i}_run_cmd']: self.m_cfng[f'fj{i}_run_cmd'],
+                    #     # self.names[f'fj{i}_res']: self.m_cfng[f'fj{i}_res']
+                    # }
+                    # })
                     self.client.publish(self.m_cfng['mqtt_topic'], self.mqtt_out)
                     self.high_start_time_2 = None
-                    self.last_dcs_time2 = int(time.time())
+                    # self.last_dcs_time2 = int(time.time())
             else:
                 if self.high_start_time_2 is not None:
                     self.high_start_time_2 = None 
 
-    def control_loop(self, d_time, d_time2):
-        self.update_status(self.m_cfng['do11_lst'], self.m_cfng['do11'], 'do11_onl', self.m_cfng_onl_1)
-        self.update_status(self.m_cfng['do12_lst'], self.m_cfng['do12'], 'do12_onl', self.m_cfng_onl_1)
+    def control_fan_open_close(self):
+        if self.open_1_id is None and self.close_1_id is None and self.open_2_id is None and self.close_2_id is None:
+            return
         
-        self.update_status(self.m_cfng['do2_lst'], self.m_cfng['do2'], 'do2_onl', self.m_cfng_onl_2)
+        if self.open_1_id is not None:
+            if self.m_cfng['ai'] == 1:
+                for key in [1, 2, 3]:
+                    if self.m_cfng[f"run_io{key}"]>20.0:  # 远程？
+                        self.m_cfng[f'fj{key}_res'] = float(np.clip(self.m_cfng[f"fj{key}_fk"] - 25,self.m_cfng['min1'],self.m_cfng['max1']))
+                        thread = threading.Thread(
+                            target=self.modify_value_thread,
+                            args=(self.m_cfng[f"fj{key}_fk"], self.m_cfng[f'fj{key}_res'],
+                                    self.devicenames[f"fj{key}_res"], self.names[f"fj{key}_res"]),
+                            kwargs={
+                                "delay": 15,
+                                "max_step": 5,
+                            }
+                        )
+                        thread.daemon = True  # 设置为守护线程
+                        thread.start()
+                        
+                self.client.publish(self.m_cfng['write_topic'], {
+                self.devicenames[f'fj{self.open_1_id}_res'] : {
+                    self.names[f'fj{self.open_1_id}_run']: 1}
+                })
+                # while(self.m_cfng[f'fj{self.open_1_id}_gd'] < self.m_cfng['zs_min']):
+                time.sleep(10)
+                self.client.publish(self.m_cfng['write_topic'], {
+                self.devicenames[f'fj{self.open_1_id}_res'] : {
+                    self.names[f'fj{self.open_1_id}_loading']: 2,
+                    self.names[f'fj{self.open_1_id}_res']: self.m_cfng[f'min1']}
+                })
+                self.logger.debug(f"新开风机{self.open_1_id}")
+                self.open_1_id = None
+                
+        if self.close_1_id is not None:
+            if self.m_cfng['ai'] == 1:
+                for key in [x for x in [1, 2, 3] if x != self.close_1_id]:
+                    if self.m_cfng[f"run_io{key}"] > 20.0:  # 远程？
+                        self.m_cfng[f'fj{key}_res'] = float(np.clip(self.m_cfng[f"fj{key}_fk"] + 25,self.m_cfng['min1'],self.m_cfng['max1']))
+                        thread = threading.Thread(
+                            target=self.modify_value_thread,
+                            args=(self.m_cfng[f"fj{key}_fk"], self.m_cfng[f'fj{key}_res'],
+                                    self.devicenames[f"fj{key}_res"], self.names[f"fj{key}_res"]),
+                            kwargs={
+                                "delay": 15,
+                                "max_step": 5,
+                            }
+                        )
+                        thread.daemon = True  # 设置为守护线程
+                        thread.start()
+                        
+                self.client.publish(self.m_cfng['write_topic'], {
+                self.devicenames[f'fj{self.close_1_id}_res'] : {
+                    self.names[f'fj{self.close_1_id}_stop']: 3}
+                })
+                self.logger.debug(f"关风机{self.close_1_id}")
+                self.close_1_id = None
+                
+        if self.open_2_id is not None:
+            if self.m_cfng['ai'] == 1:
+                for key in [4,5,6,7,8,9]:
+                    if self.m_cfng[f"run_io{key}"]>20.0:  # 远程？
+                        self.m_cfng[f'fj{key}_res'] = float(np.clip(self.m_cfng[f"fj{key}_fk"] - 25,self.m_cfng['min2'],self.m_cfng['max2']))
+                        thread = threading.Thread(
+                            target=self.modify_value_thread,
+                            args=(self.m_cfng[f"fj{key}_fk"], self.m_cfng[f'fj{key}_res'],
+                                    self.devicenames[f"fj{key}_res"], self.names[f"fj{key}_res"]),
+                            kwargs={
+                                "delay": 15,
+                                "max_step": 5,
+                            }
+                        )
+                        thread.daemon = True  # 设置为守护线程
+                        thread.start()
+                        
+                self.client.publish(self.m_cfng['write_topic'], {
+                self.devicenames[f'fj{self.open_2_id}_res'] : {
+                    self.names[f'fj{self.open_2_id}_run']: 1}
+                })
+                # while(self.m_cfng[f'fj{self.open_2_id}_gd'] < self.m_cfng['zs_min']):
+                time.sleep(10)
+                self.client.publish(self.m_cfng['write_topic'], {
+                self.devicenames[f'fj{self.open_2_id}_res'] : {
+                    self.names[f'fj{self.open_2_id}_loading']: 2,
+                    self.names[f'fj{self.open_2_id}_res']: self.m_cfng[f'min1']}
+                })
+                self.logger.debug(f"新开风机{self.open_2_id}")
+                self.open_2_id = None
+                
+        if self.close_2_id is not None:
+            if self.m_cfng['ai'] == 1:
+                for key in [x for x in [4,5,6,7,8,9] if x != self.close_2_id]:
+                    if self.m_cfng[f"run_io{key}"] > 20.0:  # 远程？
+                        self.m_cfng[f'fj{key}_res'] = float(np.clip(self.m_cfng[f"fj{key}_fk"] +25,self.m_cfng['min2'],self.m_cfng['max2']))
+                        thread = threading.Thread(
+                            target=self.modify_value_thread,
+                            args=(self.m_cfng[f"fj{key}_fk"], self.m_cfng[f'fj{key}_res'],
+                                    self.devicenames[f"fj{key}_res"], self.names[f"fj{key}_res"]),
+                            kwargs={
+                                "delay": 15,
+                                "max_step": 5,
+                            }
+                        )
+                        thread.daemon = True  # 设置为守护线程
+                        thread.start()
+                        
+                self.client.publish(self.m_cfng['write_topic'], {
+                self.devicenames[f'fj{self.close_2_id}_res'] : {
+                    self.names[f'fj{self.close_2_id}_stop']: 3}
+                })
+                self.logger.debug(f"关风机{self.close_2_id}")
+                self.close_2_id = None
 
-        self.logger.debug(f"DO11:{self.m_cfng_onl_1}")
-        self.logger.debug(f"DO2:{self.m_cfng_onl_2}")
-
-        if d_time >= 45:
-            # 主控制逻辑
-            self.logger.info("活性污泥曝气智能体控制信号：{}".format(self.m_cfng["ai"]))
-
-            if self.m_cfng_onl_1['do11_onl']:
-                self.m_cfng['do1'] = self.m_cfng['do11']
-            elif self.m_cfng_onl_1['do12_onl']:
-                self.m_cfng['do1'] = self.m_cfng['do12'] + self.m_cfng['do1_diff']
-                self.logger.debug("一期2号生物池")
-            else:
-                self.m_cfng['do1'] = self.m_cfng['do1_set']
-                self.logger.debug("一期2个DO异常,不控")
-
-            if self.m_cfng_onl_2['do2_onl']:   
-                self.m_cfng['do2'] = self.m_cfng['do2']
-            else:
-                self.m_cfng['do2'] = self.m_cfng['do2_set']
-                self.logger.debug("二三期DO异常,不控")
-
-
-            self.online_values2 = []
-            if self.m_cfng_onl_1['do11_onl']:
-                self.online_values2.append(self.m_cfng['do11'])
-            if self.m_cfng_onl_1['do12_onl']:
-                self.online_values2.append(self.m_cfng['do12'])
-            if self.online_values2:
-                self.m_cfng['do1_min_t'] = min(self.online_values2)
-
-            # 一期控制
-            self._phase_control(1, self.fc_model2)  
-            # 二三期控制
-            self._phase_control(2, self.fc_model2)
-            # 风机启停
-            self._fan_open_close()
+    def control_loop(self, d_time, d_time2):
+        # if self.get_fan_running_state([1,2,3]) and self.get_fan_running_state([4, 5, 6, 7, 8, 9]):
+        
+            self.update_status(self.m_cfng['do11_lst'], self.m_cfng['do11'], 'do11_onl', self.m_cfng_onl_1)
+            self.update_status(self.m_cfng['do12_lst'], self.m_cfng['do12'], 'do12_onl', self.m_cfng_onl_1)
+            self.update_status(self.m_cfng['NH3_11_lst'], self.m_cfng['NH3_11'], 'NH3_11_onl', self.m_cfng_onl_1)
+            self.update_status(self.m_cfng['NH3_12_lst'], self.m_cfng['NH3_12'], 'NH3_12_onl', self.m_cfng_onl_1)
+            self.update_status(self.m_cfng['do22_lst'], self.m_cfng['do2'], 'do2_onl', self.m_cfng_onl_2)
+            self.update_status(self.m_cfng['NH3_2_lst'], self.m_cfng['NH3_2'], 'NH3_2_onl', self.m_cfng_onl_2)
             
-            self.check_fan_switch({1,2,3})
-            self.check_fan_switch({4,5})
-            self.check_fan_switch({6,7,8,9})
-            
-            
-           
-            
+            self.logger.debug(f"DO11:{self.m_cfng_onl_1}")
+            self.logger.debug(f"DO2:{self.m_cfng_onl_2}")
 
-            if d_time2 > 100000:
-                self.last_dcs_time2 = int(time.time())
-                self.logger.debug(f"运行第一次，不输出")
-            if self.m_cfng['write'] and self.m_cfng['control_interval'] < d_time2 < 100000:
-                self.last_dcs_time2 = int(time.time())
+            if d_time >= 45:
+                # 主控制逻辑
+                self.logger.info("活性污泥曝气智能体控制信号：{}".format(self.m_cfng["ai"]))
 
-                self.mqtt_out["outputCommand"] = ""
-                self.mqtt_out['time'] = time.strftime("%Y-%m-%d %H:%M:%S")
+                if self.m_cfng_onl_1['do11_onl']:
+                    self.m_cfng['do1'] = self.m_cfng['do11']
+                elif self.m_cfng_onl_1['do12_onl']:
+                    self.m_cfng['do1'] = self.m_cfng['do12'] + self.m_cfng['do1_diff']
+                    self.logger.debug("一期2号生物池")
+                else:
+                    self.m_cfng['do1'] = self.m_cfng['do1_set']
+                    self.logger.debug("一期2个DO异常,不控")
+
+                if self.m_cfng_onl_2['do2_onl']:  
+                    self.m_cfng['do2'] = self.m_cfng['do2']
+                else:
+                    self.m_cfng['do2'] = self.m_cfng['do2_set']
+                    self.logger.debug("二三期DO异常,不控")
+                
+                self.m_cfng['do1_set'] = float(np.clip(self.m_cfng['do1_set'], self.m_cfng['do1_min'], self.m_cfng['do1_max']))
+                self.m_cfng['do2_set'] = float(np.clip(self.m_cfng['do2_set'], self.m_cfng['do2_min'], self.m_cfng['do2_max']))
+
+                if self.m_cfng_onl_1['NH3_11_onl']:
+                    self.m_cfng['NH3_1'] = self.m_cfng['NH3_11']
+                elif self.m_cfng_onl_1['NH3_12_onl']:
+                    self.m_cfng['NH3_1'] = self.m_cfng['NH3_12']
+                else:
+                    self.m_cfng['NH3_1'] = 1.0
+                    self.logger.debug("生物池氨氮异常")
+                # self.online_values2 = []
+                # if self.m_cfng_onl_1['do11_onl']:
+                #     self.online_values2.append(self.m_cfng['do11'])
+                # if self.m_cfng_onl_1['do12_onl']:
+                #     self.online_values2.append(self.m_cfng['do12'])
+                # if self.online_values2:
+                #     self.m_cfng['do1_min_t'] = min(self.online_values2)
+
+                # 一期控制
+                self._phase_control(1, self.fc_model2)  
+                # 二三期控制
+                self._phase_control(2, self.fc_model2)
+                # 风机启停
+                self._fan_open_close()
                 if self.m_cfng['ai'] == 1:
-                    # mqtt_日志
-                    self.mqtt_out["outputCommand"] += "一期生物池#"
-                    self.mqtt_out["outputCommand"] += \
-                        f"实时：一期溶解氧：{round(self.m_cfng['do1'], 2)}mg/L，目标值：{self.m_cfng['do1_set']}mg/L#"
-                    for key in [1, 2, 3]:
-                        if self.m_cfng[f"run_io{key}"]>20.0:  # 远程？
-                            self.client.publish(self.m_cfng['write_topic'], {
-                            self.devicenames[f'fj{key}_run_cmd'] : {
-                                self.names[f'fj{key}_run_cmd']: 1
-                            }
-                            })
-                            thread = threading.Thread(
-                                target=self.modify_value_thread,
-                                args=(self.m_cfng[f"fj{key}_fk"], self.m_cfng[f"fj{key}_res"],
-                                      self.devicenames[f"fj{key}_res"], self.names[f"fj{key}_res"]),
-                                kwargs={
-                                    "delay": 15,
-                                    "max_step": 5,
-                                }
-                            )
-                            thread.daemon = True  # 设置为守护线程
-                            thread.start()
+                    self.control_fan_open_close()
+                    self.check_fan_switch({1,2,3})
+                    self.check_fan_switch({4,5,6,7,8,9})
+                    # self.check_fan_switch({6,7,8,9})
+                
+                if d_time2 > 100000:
+                    self.last_dcs_time2 = int(time.time())
+                    self.logger.debug(f"运行第一次，不输出")
+                if self.m_cfng['write'] and self.m_cfng['control_interval'] < d_time2 < 100000:
+                    self.last_dcs_time2 = int(time.time())
 
-                            self.mqtt_out["outputCommand"] += (f"一期{key}号风机运行，"
-                                                               f"反馈：{round(self.m_cfng[f'fj{key}_fk'], 2)}%，"
-                                                               f"上限：{self.m_cfng[f'max1']}%，"
-                                                               f"下限：{self.m_cfng[f'min1']}%，"
-                                                               f"控制输出：{self.m_cfng[f'fj{key}_res']}%")
+                    self.mqtt_out["outputCommand"] = ""
+                    self.mqtt_out['time'] = time.strftime("%Y-%m-%d %H:%M:%S")
+                    if self.m_cfng['ai'] == 1:
+                        # mqtt_日志
+                        self.mqtt_out["outputCommand"] += "一期生物池#"
+                        self.mqtt_out["outputCommand"] += \
+                            f"实时：一期溶解氧：{round(self.m_cfng['do1'], 2)}mg/L，目标值：{self.m_cfng['do1_set']}mg/L#"
+                        for key in [1, 2, 3]:
+                            if self.m_cfng[f"run_io{key}"]>20.0:  # 远程？
+                                # self.client.publish(self.m_cfng['write_topic'], {
+                                # self.devicenames[f'fj{key}_run_cmd'] : {
+                                #     self.names[f'fj{key}_run_cmd']: 1
+                                # }
+                                # })
+                                thread = threading.Thread(
+                                    target=self.modify_value_thread,
+                                    args=(self.m_cfng[f"fj{key}_fk"], self.m_cfng[f"fj{key}_res"],
+                                        self.devicenames[f"fj{key}_res"], self.names[f"fj{key}_res"]),
+                                    kwargs={
+                                        "delay": 15,
+                                        "max_step": 5,
+                                    }
+                                )
+                                thread.daemon = True  # 设置为守护线程
+                                thread.start()
 
-                            self.logger.debug(f"{key}#风机远程、运行，反写输出结果【{self.m_cfng[f'fj{key}_res']}】")
-                            
-                    self.mqtt_out["outputCommand"] += "二期生物池#"
-                    self.mqtt_out["outputCommand"] += \
-                        f"实时：二期溶解氧：{round(self.m_cfng['do2'], 2)}mg/L，目标值：{self.m_cfng['do2_set']}mg/L#"
-                    for key in [4, 5, 6, 7, 8, 9]:
-                        if self.m_cfng[f"run_io{key}"]>20.0:  # 远程？
-                            self.client.publish(self.m_cfng['write_topic'], {
-                            self.devicenames[f'fj{key}_run_cmd'] : {
-                                self.names[f'fj{key}_run_cmd']: 1
-                            }
-                            })
-                            thread = threading.Thread(
-                                target=self.modify_value_thread,
-                                args=(self.m_cfng[f"fj{key}_fk"], self.m_cfng[f"fj{key}_res"],
-                                      self.devicenames[f"fj{key}_res"], self.names[f"fj{key}_res"]),
-                                kwargs={
-                                    "delay": 15,
-                                    "max_step": 5,
-                                }
-                            )
-                            thread.daemon = True  # 设置为守护线程
-                            thread.start()
+                                self.mqtt_out["outputCommand"] += (f"一期{key}号风机运行，"
+                                                                f"反馈：{round(self.m_cfng[f'fj{key}_fk'], 2)}%，"
+                                                                f"上限：{self.m_cfng[f'max1']}%，"
+                                                                f"下限：{self.m_cfng[f'min1']}%，"
+                                                                f"控制输出：{self.m_cfng[f'fj{key}_res']}%.#")
 
-                            self.mqtt_out["outputCommand"] += (f"二期{key-3}号风机运行，"
-                                                               f"反馈：{round(self.m_cfng[f'fj{key}_fk'], 2)}%，"
-                                                               f"上限：{self.m_cfng[f'max2']}%，"
-                                                               f"下限：{self.m_cfng[f'min2']}%，"
-                                                               f"控制输出：{self.m_cfng[f'fj{key}_res']}%")
+                                self.logger.debug(f"{key}#风机远程、运行，反写输出结果【{self.m_cfng[f'fj{key}_res']}】")
+                                
+                        self.mqtt_out["outputCommand"] += "二期生物池#"
+                        self.mqtt_out["outputCommand"] += \
+                            f"实时：二期溶解氧：{round(self.m_cfng['do2'], 2)}mg/L，目标值：{self.m_cfng['do2_set']}mg/L#"
+                        for key in [4, 5, 6, 7, 8, 9]:
+                            if self.m_cfng[f"run_io{key}"]>20.0:  # 远程？
+                                # self.client.publish(self.m_cfng['write_topic'], {
+                                # self.devicenames[f'fj{key}_run_cmd'] : {
+                                #     self.names[f'fj{key}_run_cmd']: 1
+                                # }
+                                # })
+                                thread = threading.Thread(
+                                    target=self.modify_value_thread,
+                                    args=(self.m_cfng[f"fj{key}_fk"], self.m_cfng[f"fj{key}_res"],
+                                        self.devicenames[f"fj{key}_res"], self.names[f"fj{key}_res"]),
+                                    kwargs={
+                                        "delay": 15,
+                                        "max_step": 5,
+                                    }
+                                )
+                                thread.daemon = True  # 设置为守护线程
+                                thread.start()
 
-                            self.logger.debug(f"{key}#风机远程、运行，反写输出结果【{self.m_cfng[f'fj{key}_res']}】")     
-                            
-                            
-                    self.client.publish(self.m_cfng['mqtt_topic'], self.mqtt_out)
+                                self.mqtt_out["outputCommand"] += (f"二期{key-3}号风机运行，"
+                                                                f"反馈：{round(self.m_cfng[f'fj{key}_fk'], 2)}%，"
+                                                                f"上限：{self.m_cfng[f'max2']}%，"
+                                                                f"下限：{self.m_cfng[f'min2']}%，"
+                                                                f"控制输出：{self.m_cfng[f'fj{key}_res']}%.#")
 
-            else:
-                self.logger.debug('距离上次算法输出：{}s，时间未到{}s，不输出\n'.format(d_time2, self.m_cfng['control_interval']))
+                                self.logger.debug(f"{key}#风机远程、运行，反写输出结果【{self.m_cfng[f'fj{key}_res']}】")     
+                                
+                                
+                        self.client.publish(self.m_cfng['mqtt_topic'], self.mqtt_out)
 
-            # 更新时间戳
-            self.last_dcs_time = int(time.time())
+                else:
+                    self.logger.debug('距离上次算法输出：{}s，时间未到{}s，不输出\n'.format(d_time2, self.m_cfng['control_interval']))
+
+                # 更新时间戳
+                self.last_dcs_time = int(time.time())
+        # else:
+        #     if (self.get_fan_running_state([1,2,3])) is False:
+        #         self.client.publish(self.m_cfng['write_topic'], {
+        #         self.devicenames[f'fj{1}_res'] : {
+        #             self.names[f'fj{1}_run']: 1}
+        #         })
+        #         while(self.m_cfng[f'fj{1}_gd'] < self.m_cfng['zs_min']):
+        #             time.sleep(1)
+        #         self.client.publish(self.m_cfng['write_topic'], {
+        #         self.devicenames[f'fj{1}_res'] : {
+        #             self.names[f'fj{1}_loading']: 2,
+        #             self.names[f'fj{1}_res']: self.m_cfng[f'min1']}
+        #         })
+        #         self.logger.debug(f"初始化未开风机，新开风机1")
+        #     if (self.get_fan_running_state([4, 5])) is False:
+        #         self.client.publish(self.m_cfng['write_topic'], {
+        #         self.devicenames[f'fj{4}_res'] : {
+        #             self.names[f'fj{4}_run']: 1}
+        #         })
+        #         while(self.m_cfng[f'fj{4}_gd'] < self.m_cfng['zs_min']):
+        #             time.sleep(1)
+        #         self.client.publish(self.m_cfng['write_topic'], {
+        #         self.devicenames[f'fj{4}_res'] : {
+        #             self.names[f'fj{4}_loading']: 2,
+        #             self.names[f'fj{4}_res']: self.m_cfng[f'min2']}
+        #         })
+        #         self.logger.debug(f"初始化未开风机，新开风机4")
+        #     if (self.get_fan_running_state([6, 7, 8, 9])) is False:
+        #         self.client.publish(self.m_cfng['write_topic'], {
+        #         self.devicenames[f'fj{6}_res'] : {
+        #             self.names[f'fj{6}_run']: 1}
+        #         })
+        #         while(self.m_cfng[f'fj{6}_gd'] < self.m_cfng['zs_min']):
+        #             time.sleep(1)
+        #         self.client.publish(self.m_cfng['write_topic'], {
+        #         self.devicenames[f'fj{6}_res'] : {
+        #             self.names[f'fj{6}_loading']: 2,
+        #             self.names[f'fj{6}_res']: self.m_cfng[f'min2']}
+        #         })
+        #         self.logger.debug(f"初始化未开风机，新开风机6")
 
     def _phase_control(self, phase_id, fc_model):
         self.logger.info(f"-----------{phase_id}期生化池曝气控制----------")
         self.m_cfng[f'do{phase_id}_km'], self.m_cfng[f'do{phase_id}_slope'] = get_kalman_value_and_slope(
             self.m_cfng[f"do{phase_id}"], self.m_cfng[f'do{phase_id}_lst'],
             self.m_cfng[f'do{phase_id}_km_lst'], 0.1, self.m_cfng["n_slope"])
+        self.logger.debug(f"do{phase_id}_lst:{self.m_cfng[f'do{phase_id}_lst']}")
+        self.logger.debug(f"do{phase_id}_km_lst:{self.m_cfng[f'do{phase_id}_km_lst']}")
         self.logger.debug(f"{phase_id}期DO:{self.m_cfng[f'do{phase_id}_km']},"
                           f"斜率：{self.m_cfng[f'do{phase_id}_slope']},"
-                          f"目标值：{self.m_cfng[f'do{phase_id}_set']}")
+                          f"目标值：{self.m_cfng[f'do{phase_id}_set']},"
+                          f"NH3_N: {self.m_cfng[f'NH3_{phase_id}']}")
 
         self.m_cfng[f'off{phase_id}_fc'] = float(fc_model.run(None, {
             'error': np.array([[self.m_cfng[f'do{phase_id}_km']-self.m_cfng[f'do{phase_id}_set']]],
@@ -567,14 +760,42 @@ class HGBaoqiModel(WaterControlModel):
         if abs(self.m_cfng[f'off{phase_id}']) < self.m_cfng['off_min']:
             self.m_cfng[f'off{phase_id}'] = 0
 
-        if phase_id == 1:
-            if self.m_cfng[f'do{phase_id}_min_t'] < 0.6:
-                self.m_cfng[f'off{phase_id}'] = np.clip(self.m_cfng[f'off{phase_id}'], 1, self.m_cfng['off_max'])
-                self.logger.debug(f"do{phase_id}_min_t小于0.6，偏置最低为1")
-            else:
-                self.m_cfng[f'off{phase_id}'] = np.clip(self.m_cfng[f'off{phase_id}'], -self.m_cfng['off_max'], self.m_cfng['off_max'])
+
+        
+        
+        self.m_cfng['min_set_1'] = 0.0
+        runing_fj_1_count = 0   # 开始数量
+        for i in [1,2,3]:
+            if self.m_cfng[f'run_io{i}'] > 20:
+                runing_fj_1_count += 1
+        if runing_fj_1_count == 1:
+            self.m_cfng['min_set_1'] = 2.0
+        else:
+            self.m_cfng['min_set_1'] = 1.0
+        if (self.m_cfng['do1_km'] > self.m_cfng['do1_set'] + 1.0) and (self.m_cfng['NH3_1'] < self.m_cfng['NH3_max1'] + 0.5):
+            self.m_cfng['min_set_1'] = 0.0
+        self.m_cfng['min_set_2'] = 0.0
+        runing_fj_2_count = 0   # 开始数量
+        for i in [4, 5, 6, 7, 8, 9]:
+            if self.m_cfng[f'run_io{i}'] > 20:
+                runing_fj_2_count += 1
+        if runing_fj_2_count == 1:
+            self.m_cfng['min_set_2'] = 2.0
+        else:
+            self.m_cfng['min_set_2'] = 1.0
+        
+        # if phase_id == 1:
+        if self.m_cfng[f'NH3_{phase_id}'] > self.m_cfng[f'NH3_max{phase_id}'] - 0.1:
+            self.m_cfng[f'off{phase_id}'] = np.clip(self.m_cfng[f'off{phase_id}'], self.m_cfng[f'min_set_{phase_id}'], self.m_cfng['off_max'])
+            self.logger.debug(f"NH3_{phase_id}大于{self.m_cfng[f'NH3_max{phase_id}']}，偏置最低为{self.m_cfng[f'min_set_{phase_id}']}")
         else:
             self.m_cfng[f'off{phase_id}'] = np.clip(self.m_cfng[f'off{phase_id}'], -self.m_cfng['off_max'], self.m_cfng['off_max'])
+        # else:
+        #     self.m_cfng[f'off{phase_id}'] = np.clip(self.m_cfng[f'off{phase_id}'], -self.m_cfng['off_max'], self.m_cfng['off_max'])
+
+        if phase_id == 2:
+            if self.m_cfng['NH3_2'] < self.m_cfng[f'NH3_max2'] - 0.2:
+                self.m_cfng[f'off{phase_id}'] = np.clip(self.m_cfng[f'off{phase_id}'], -self.m_cfng['off_max'], -1)
 
         self.logger.debug(f"{phase_id}期曝气总偏置：【{self.m_cfng[f'off{phase_id}']}】")
 

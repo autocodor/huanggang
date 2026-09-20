@@ -6,6 +6,7 @@ services:
   baoqi-c:  #曝气
     image: swr.cn-south-1.myhuaweicloud.com/xintong/ai-baoqi-hg:1.0.1
     container_name: baoqi-c
+    pull_policy: always
     environment:
       - TZ=Asia/Shanghai
     restart: unless-stopped
